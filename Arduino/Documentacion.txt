@@ -6,3 +6,7 @@ https://www.youtube.com/watch?v=O0BZ-f4sXwE&t=317s
 BMP280:
 https://www.youtube.com/watch?v=LtZ_b2WVMrU
 
+MQ135:
+https://naylampmechatronics.com/blog/42_Tutorial-sensores-de-gas-MQ2-MQ3-MQ7-y-MQ13.html
+
+
