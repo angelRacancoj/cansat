@@ -2,9 +2,9 @@
 
 #include <TinyGPS.h>
 
-/* This sample code demonstrates the normal use of a TinyGPS object.
-   It requires the use of SoftwareSerial, and assumes that you have a
-   4800-baud serial GPS device hooked up on pins 4(rx) and 3(tx).
+/* Pines: 11(rx) and 10(tx)
+   baud serial: 9600
+   Voltaje necesario: 3.3v
 */
 
 TinyGPS gps;
