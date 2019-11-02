@@ -1,0 +1,17 @@
+Links de Ejemplos:
+
+TinyGPS:
+https://www.youtube.com/watch?v=O0BZ-f4sXwE&t=317s
+
+BMP280 (Sensor barometrico):
+https://www.youtube.com/watch?v=LtZ_b2WVMrU
+
+MQ135 (Sensor calidad de aire):
+https://naylampmechatronics.com/blog/42_Tutorial-sensores-de-gas-MQ2-MQ3-MQ7-y-MQ13.html
+
+MPU6050 (Giroscopio y Acelerometro):
+https://naylampmechatronics.com/blog/45_Tutorial-MPU6050-Aceler%C3%B3metro-y-Giroscopio.html
+
+NRF24L01 (Antena):
+https://naylampmechatronics.com/blog/16_Tutorial-b%C3%A1sico-NRF24L01-con-Arduino.html
+
