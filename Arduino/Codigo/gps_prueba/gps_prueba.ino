@@ -2,17 +2,19 @@
 
 #include <TinyGPS.h>
 
+
+#define N 32
 /* Pines: 11(rx) and 10(tx)
    baud serial: 9600
    Voltaje necesario: 3.3v
 */
 
 TinyGPS gps;
-SoftwareSerial ss(10, 11);
+SoftwareSerial ss(4, 3);
 
 static void smartdelay(unsigned long ms);
-static void print_float(float val, float invalid, int len, int prec);
-static void print_int(unsigned long val, unsigned long invalid, int len);
+float print_float(float val, float invalid, int len, int prec);
+int print_int(unsigned long val, unsigned long invalid, int len);
 static void print_date(TinyGPS &gps);
 static void print_str(const char *str, int len);
 
@@ -33,32 +35,20 @@ void setup()
 void loop()
 {
   float flat, flon;
-  unsigned long age, date, time, chars = 0;
+  unsigned long age, date, chars = 0;
   unsigned short sentences = 0, failed = 0;
-  static const double LONDON_LAT = 51.508131, LONDON_LON = -0.128002;
   
-  print_int(gps.satellites(), TinyGPS::GPS_INVALID_SATELLITES, 5);
-  print_int(gps.hdop(), TinyGPS::GPS_INVALID_HDOP, 5);
   gps.f_get_position(&flat, &flon, &age);
-  print_float(flat, TinyGPS::GPS_INVALID_F_ANGLE, 10, 6);
-  print_float(flon, TinyGPS::GPS_INVALID_F_ANGLE, 11, 6);
-  print_int(age, TinyGPS::GPS_INVALID_AGE, 5);
+  Serial.print("latitud:");
+  float latitude =  print_float(flat, TinyGPS::GPS_INVALID_F_ANGLE, 10, 6);
+  Serial.print("longitud");
+  float longitude = print_float(flon, TinyGPS::GPS_INVALID_F_ANGLE, 11, 6);
+  Serial.print("fecha-Hora");
   print_date(gps);
-  print_float(gps.f_altitude(), TinyGPS::GPS_INVALID_F_ALTITUDE, 7, 2);
-  print_float(gps.f_course(), TinyGPS::GPS_INVALID_F_ANGLE, 7, 2);
-  print_float(gps.f_speed_kmph(), TinyGPS::GPS_INVALID_F_SPEED, 6, 2);
-  print_str(gps.f_course() == TinyGPS::GPS_INVALID_F_ANGLE ? "*** " : TinyGPS::cardinal(gps.f_course()), 6);
-  print_int(flat == TinyGPS::GPS_INVALID_F_ANGLE ? 0xFFFFFFFF : (unsigned long)TinyGPS::distance_between(flat, flon, LONDON_LAT, LONDON_LON) / 1000, 0xFFFFFFFF, 9);
-  print_float(flat == TinyGPS::GPS_INVALID_F_ANGLE ? TinyGPS::GPS_INVALID_F_ANGLE : TinyGPS::course_to(flat, flon, LONDON_LAT, LONDON_LON), TinyGPS::GPS_INVALID_F_ANGLE, 7, 2);
-  print_str(flat == TinyGPS::GPS_INVALID_F_ANGLE ? "*** " : TinyGPS::cardinal(TinyGPS::course_to(flat, flon, LONDON_LAT, LONDON_LON)), 6);
-
-  gps.stats(&chars, &sentences, &failed);
-  print_int(chars, 0xFFFFFFFF, 6);
-  print_int(sentences, 0xFFFFFFFF, 10);
-  print_int(failed, 0xFFFFFFFF, 9);
-  Serial.println();
-  
-  smartdelay(1000);
+  Serial.print("Altitud:");
+  float altitud = print_float(gps.f_altitude(), TinyGPS::GPS_INVALID_F_ALTITUDE, 7, 2);
+  Serial.println("");
+  delay(1000);
 }
 
 static void smartdelay(unsigned long ms)
@@ -71,13 +61,14 @@ static void smartdelay(unsigned long ms)
   } while (millis() - start < ms);
 }
 
-static void print_float(float val, float invalid, int len, int prec)
+float print_float(float val, float invalid, int len, int prec)
 {
   if (val == invalid)
   {
     while (len-- > 1)
       Serial.print('*');
     Serial.print(' ');
+    return 0;
   }
   else
   {
@@ -88,10 +79,11 @@ static void print_float(float val, float invalid, int len, int prec)
     for (int i=flen; i<len; ++i)
       Serial.print(' ');
   }
+  return val;
   smartdelay(0);
 }
 
-static void print_int(unsigned long val, unsigned long invalid, int len)
+int print_int(unsigned long val, unsigned long invalid, int len)
 {
   char sz[32];
   if (val == invalid)
@@ -111,6 +103,8 @@ static void print_date(TinyGPS &gps)
 {
   int year;
   byte month, day, hour, minute, second, hundredths;
+  char anho[N], mes[N], dia[N], hora[N], minuto[N], segundo[N];
+  String an, ms, da, hr, mt, sg;
   unsigned long age;
   gps.crack_datetime(&year, &month, &day, &hour, &minute, &second, &hundredths, &age);
   if (age == TinyGPS::GPS_INVALID_AGE)
@@ -118,13 +112,21 @@ static void print_date(TinyGPS &gps)
   else
   {
     char sz[32];
-    sprintf(sz, "%02d/%02d/%02d %02d:%02d:%02d ",
-        month, day, year, hour, minute, second);
+    ms = sprintf(mes, "%02d", month);
+    da = sprintf(dia, "%02d", day);
+    hr = sprintf(hora, "%02d", hour);
+    mt = sprintf(minuto, "%02d", minute);
+    sg = sprintf(segundo, "%02d", second);
+    
+    //sprintf(sz, "%02d/%02d/%02d %02d:%02d:%02d ",
+    //    month, day, year, hour, minute, second);
     Serial.print(sz);
   }
   print_int(age, TinyGPS::GPS_INVALID_AGE, 5);
   smartdelay(0);
 }
+
+
 
 static void print_str(const char *str, int len)
 {
